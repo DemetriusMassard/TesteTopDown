@@ -36,5 +36,9 @@ function Level1.new()
 		end
 	end
 	
+	function public.keypressed(key,unicode)
+	
+	end
+	
 	return public
 end
