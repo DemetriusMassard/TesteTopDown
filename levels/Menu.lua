@@ -70,7 +70,9 @@ function Menu.new()
 			if private.visible == private.options then
 				if private.selected == 3 then
 					selectedmode = modes.modes[private.visible[private.selected].getOption()]
-					love.window.setMode(selectedmode.width, selectedmode.height)
+					settings.resolution.w = selectedmode.width
+					settings.resolution.h = selectedmode.height
+					applySettings()
 					print(selectedmode.width .. 'x' .. selectedmode.height)
 				end
 			end
