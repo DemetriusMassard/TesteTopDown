@@ -1,16 +1,18 @@
 Button = {}
 
-function Button.new(x, y,w,h, name, options)
+function Button.new(x, y,w,h, name, options, label)
 	local private = {}
 	local public = {}
-	private.x = x
-	private.y = y
-	private.h = h
-	private.w = w
+	public.x = x
+	public.y = y
+	public.h = h
+	public.w = w
 	private.name = name
 	private.focused = false
 	private.options = options
+	private.label = label
 	private.selected = 1
+	
 	
 	
 	function public.changeOption(option)
@@ -36,10 +38,15 @@ function Button.new(x, y,w,h, name, options)
 	
 	function public.draw()
 		if private.focused then
-			love.graphics.circle("fill", private.x-35, private.y+(private.h/2), 10)
+			love.graphics.circle("fill", public.x-35, public.y+(public.h/2), 10)
 		end
-		love.graphics.rectangle("line", private.x, private.y, private.w, private.h)
-		love.graphics.printf(private.options[private.selected], private.x, private.y+private.h/2-5, private.w, "center")
+		--love.graphics.rectangle("line", public.x, public.y, public.w, public.h)
+		if private.label then
+			love.graphics.printf(private.label, public.x-public.w, public.y+public.h/2-5, public.w, "right")
+			love.graphics.printf(private.options[private.selected], public.x, public.y+public.h/2-5, public.w, "center")
+		else
+			love.graphics.printf(private.options[private.selected], public.x, public.y+public.h/2-5, public.w, "center")
+		end
 	end
 	
 	return public

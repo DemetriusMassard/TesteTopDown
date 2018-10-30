@@ -7,6 +7,12 @@ function love.load()
 	bump = require('bump')
 	json = require('json')
 	
+	cursor = love.mouse.newCursor( 'assets/crosshair.png', 8, 8 )
+	love.mouse.setCursor(cursor)
+	
+	images = {}
+	loadImages('assets')
+	
 	loadSettings()
 	Level = Menu.new()
     joystick_list = love.joystick.getJoysticks()
@@ -32,7 +38,9 @@ function love.draw()
 end
 
 function love.keypressed(key, unicode)
-	Level.keypressed(key, unicode, nil, nil)
+	if settings.inputtype == "keyboard" then
+		Level.keypressed(key, unicode, nil, nil)
+	end
 end
 
 function love.gamepadpressed(joystick, button)
@@ -52,6 +60,14 @@ function requireAll(dir)
 	end
 
 end
+
+function loadImages(dir)
+	local files = love.filesystem.getDirectoryItems(dir)
+	for i, image in pairs(files) do
+		images[image] = love.graphics.newImage(dir .. "/" .. image)
+	end
+end
+
 function loadSettings()
 	settingsexists = love.filesystem.getInfo('settings.ini', 'file')
 	if not settingsexists then
@@ -66,22 +82,21 @@ function loadSettings()
 			vsync = false,
 			inputtype = "keyboard",
 			keyboard = {
-				accept = "z",
-				decline = "x",
-				up = "up",
-				down = "down",
-				left = "left",
-				up = "up"
+				accept = "mouse 1",
+				decline = "esc",
+				interact = "e",
+				up = "w",
+				down = "s",
+				left = "a",
+				right = "s"
 			}
 		}
-		print("ay")
 		saveSettings()
 	else
 		settings = json.decode(love.filesystem.read('settings.ini'))
 		
 	end
 	applySettings()
-	print(json.encode(settings))
 end
 
 function saveSettings()
@@ -113,4 +128,11 @@ function split(text, delim)
         table.insert(result, w)
     end
     return result
+end
+
+function coll(x1,y1,w1,h1,x2,y2,w2,h2)
+	return x1 < x2+w2 and
+			x2 < x1+w1 and
+			y1 < y2+h2 and
+			y2 < y1+h1
 end

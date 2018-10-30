@@ -29,16 +29,16 @@ function Player.new(name, x,y,w,h)
 	function public.update(dt)
 		private.xvel = 0
 		private.yvel = 0
-		if love.keyboard.isDown('up') then
+		if love.keyboard.isDown(settings.keyboard.up) then
 			private.yvel = 150
 		end
-		if love.keyboard.isDown('down') then
+		if love.keyboard.isDown(settings.keyboard.down) then
 			private.yvel = -150
 		end
-		if love.keyboard.isDown('left') then
+		if love.keyboard.isDown(settings.keyboard.left) then
 			private.xvel = 150
 		end
-		if love.keyboard.isDown('right') then
+		if love.keyboard.isDown(settings.keyboard.right) then
 			private.xvel = -150
 		end
 		
