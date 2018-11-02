@@ -8,7 +8,9 @@ function Level1.new()
 	
 	private.entities = {}
 	private.entities.player = Player.new('Player 1', 15,50,11,11)
-	private.entities['enemy 1'] = Enemy.new('enemy 1', 250,50)
+	private.entities['spawner 1'] = Spawner.new(250,50, 2)
+	
+	private.enemyCount = 0
 	
 	private.objects = {}
 	private.objects['block 1'] = Block.new('block 1', 120,120,600,40)
@@ -34,6 +36,18 @@ function Level1.new()
 	
 	function public.getEntity(name)
 		return private.entities[name]
+	end
+	
+	function public.getEntities()
+		return private.entities
+	end
+	
+	function public.getEnemyCount()
+		return private.enemyCount
+	end
+	
+	function public.addEnemyCount()
+		private.enemyCount = private.enemyCount + 1
 	end
 	
 	function public.draw()

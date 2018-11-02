@@ -7,7 +7,7 @@ function Enemy.new(name,x,y)
 	private.y = y
 	private.w = 15
 	private.h = 15
-	private.speed = 50
+	private.speed = love.math.random(30,70)
 	private.yvel = 0
 	private.xvel = 0
 	private.name = name
@@ -20,8 +20,8 @@ function Enemy.new(name,x,y)
 	
 	function private.enemyfilter(item, other)
 		local name = split(other)
-		if name[1] == "bullet" then return false
-		elseif name[1] == "Player" or name[1] == "item" or name[1] == "enemy" then return "cross"
+		if name[1] == "bullet" or name[1] == "item" then return false
+		elseif name[1] == "Player" then return "cross"
 		else return "slide"
 		end
 	end
