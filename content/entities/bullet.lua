@@ -1,6 +1,6 @@
 Bullet = {}
 
-function Bullet.new(x,y,ang, name, owner)
+function Bullet.new(x,y,ang, name)
 	local private = {}
 	local public = {}
 	private.speed = 300
@@ -12,7 +12,6 @@ function Bullet.new(x,y,ang, name, owner)
 	private.dir.x = math.cos(ang)
 	private.dir.y = math.sin(ang)
 	private.name = name
-	private.owner = owner
 	
 	private.mov = {}
 	private.mov.x = private.x
@@ -22,7 +21,7 @@ function Bullet.new(x,y,ang, name, owner)
 	
 	function private.bulletfilter(item, other)
 		local name = split(other)
-		if name[1] == "Player" or name[1] == "bullet" then return false
+		if name[1] == "Player" or name[1] == "bullet" or name[1] == "item" then return false
 		else return "touch"
 		end
 	end
@@ -38,8 +37,7 @@ function Bullet.new(x,y,ang, name, owner)
 		for c, col in pairs(cols) do
 			local name = split(col.other)
 			if name[1] == "block" or name[1] == "enemy" then
-				world:remove(private.name)
-				private.owner.bullets[private.name] = nil
+				removeBullet(private.name)
 			end
 		end
 		

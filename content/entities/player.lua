@@ -22,12 +22,16 @@ function Player.new(name, x,y,w,h)
 	private.bulletcount = 0
 	private.shoottimer = 0
 	
+	function removeBullet(name)
+		world:remove(name)
+		private.bullets[name] = nil
+	end
 	
 	function private.playerfilter(item, other)
 		local name = split(other)
-		if name[1] == "bullet" return false
+		if name[1] == "bullet" then return false
 		elseif name[1] == "item" or name[1] == "enemy" then return "cross"
-		else return "touch"
+		else return "slide"
 		end
 	end
 	
