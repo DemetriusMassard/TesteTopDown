@@ -1,6 +1,6 @@
 Bullet = {}
 
-function Bullet.new(x,y,ang, name)
+function Bullet.new(x,y,ang, dmg, name)
 	local private = {}
 	local public = {}
 	private.speed = 300
@@ -12,6 +12,7 @@ function Bullet.new(x,y,ang, name)
 	private.dir.x = math.cos(ang)
 	private.dir.y = math.sin(ang)
 	private.name = name
+	private.dmg = dmg
 	
 	private.mov = {}
 	private.mov.x = private.x
@@ -36,9 +37,11 @@ function Bullet.new(x,y,ang, name)
 		
 		for c, col in pairs(cols) do
 			local name = split(col.other)
-			if name[1] == "block" or name[1] == "enemy" then
-				removeBullet(private.name)
+			if name[1] == "enemy" then
+				local enemy = Level.getEntity(col.other)
+				enemy.damage(private.dmg,private.dir.x, private.dir.y)
 			end
+			removeBullet(private.name)
 		end
 		
 	end

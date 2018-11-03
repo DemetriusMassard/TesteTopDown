@@ -7,10 +7,13 @@ function Level1.new()
 	world = bump.newWorld(128)
 	
 	private.entities = {}
-	private.entities.player = Player.new('Player 1', 15,50,11,11)
-	private.entities['spawner 1'] = Spawner.new(250,50, 2)
+	private.entities.player = Player.new('Player 1', 15,50,16,16)
+	private.entities['spawner 1'] = Spawner.new(250,50, 5)
 	
 	private.enemyCount = 0
+	private.itemCount = 0
+	
+	fps = love.timer.getFPS()
 	
 	private.objects = {}
 	private.objects['block 1'] = Block.new('block 1', 120,120,600,40)
@@ -18,8 +21,8 @@ function Level1.new()
 	private.objects['block 3'] = Block.new('block 3', 520,-120,40,300)
 	
 	camera = {}
-	camera.x = -private.entities.player.getX() +love.graphics.getWidth()/2
-	camera.y = -private.entities.player.getY() +love.graphics.getHeight()/2
+	camera.x = -private.entities.player.getX() +love.graphics.getWidth()/2+(private.entities.player.getW()/2)
+	camera.y = -private.entities.player.getY() +love.graphics.getHeight()/2+(private.entities.player.getH()/2)
 	
 	function public.update(dt)
 		camera.x = -private.entities.player.getX() +love.graphics.getWidth()/2
@@ -32,10 +35,16 @@ function Level1.new()
 		for o, obj in pairs(private.objects) do
 			obj.update(dt)
 		end
+		fps = love.timer.getFPS()
 	end
 	
 	function public.getEntity(name)
 		return private.entities[name]
+	end
+	
+	function public.removeEntity(name)
+		world:remove(name)
+		private.entities[name] = nil
 	end
 	
 	function public.getEntities()
@@ -50,7 +59,16 @@ function Level1.new()
 		private.enemyCount = private.enemyCount + 1
 	end
 	
+	function public.getItemCount()
+		return private.itemCount
+	end
+	
+	function public.addItemCount()
+		private.itemCount = private.itemCount + 1
+	end
+	
 	function public.draw()
+		love.graphics.printf(fps, 0, 0, love.graphics.getWidth(), "right" )
 		for e, entity in pairs(private.entities) do
 			entity.draw()
 		end

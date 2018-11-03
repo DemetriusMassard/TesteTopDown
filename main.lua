@@ -3,6 +3,7 @@ function love.load()
 	requireAll('content/objects')
 	requireAll('content/entities')
 	requireAll('levels')
+	requireAll('content/weapons')
 	
 	bump = require('bump')
 	json = require('json')
@@ -82,13 +83,16 @@ function loadSettings()
 			vsync = false,
 			inputtype = "keyboard",
 			keyboard = {
+				primary = "1",
+				secondary = "2",
+				reload = "r",
 				accept = "mouse 1",
 				decline = "esc",
 				interact = "e",
 				up = "w",
 				down = "s",
 				left = "a",
-				right = "s"
+				right = "d"
 			}
 		}
 		saveSettings()

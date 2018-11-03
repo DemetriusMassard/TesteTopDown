@@ -1,9 +1,10 @@
 Spawner = {}
 
-function Spawner.new(x,y, timer)
+function Spawner.new(x,y, timerMax)
 	local private = {}
 	local public = {}
-	private.timer = timer
+	private.timer = 0
+	private.timerMax = timerMax
 	private.x = x
 	private.y = y
 	
@@ -12,7 +13,7 @@ function Spawner.new(x,y, timer)
 		count = Level.getEnemyCount()
 		local name = "enemy " .. count
 		private.timer = private.timer+dt
-		if private.timer > 0.5 then
+		if private.timer > private.timerMax then
 			private.timer = 0
 			local entities = Level.getEntities()
 			entities[name] = Enemy.new(name, private.x, private.y)
