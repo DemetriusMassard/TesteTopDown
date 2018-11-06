@@ -8,6 +8,7 @@ function Player.new(name, x,y,w,h)
 	private.h = h
 	private.w = w
 	private.name = name
+	private.money = 0
 	
 	private.weapons = {}
 	
@@ -28,34 +29,6 @@ function Player.new(name, x,y,w,h)
 	private.bullets = {}
 	private.bulletcount = 0
 	private.shootTimer = 0
-	
-	function removeBullet(name)
-		world:remove(name)
-		private.bullets[name] = nil
-	end
-	
-	function private.playerfilter(item, other)
-		local name = split(other)
-		if name[1] == "bullet" then return false
-		elseif name[1] == "item" or name[1] == "enemy" then return "cross"
-		else return "slide"
-		end
-	end
-	
-	function public.getX()
-		return private.x
-	end
-	
-	function public.getY()
-		return private.y
-	end
-	
-	function public.getW()
-		return private.w
-	end
-	function public.getH()
-		return private.h
-	end
 	
 	function public.update(dt)
 		private.shootTimer = private.shootTimer + dt
@@ -103,7 +76,16 @@ function Player.new(name, x,y,w,h)
 		for c, col in pairs(cols) do
 			local name = split(col.other)
 			if name[1] == "item" then
-				private.weapons.selected.resMags = private.weapons.selected.resMags + private.weapons.selected.magMax
+				local item = Level.getEntity(col.other)
+				local type = item.getType()
+				if type == 1 then
+					private.weapons.selected.resMags = private.weapons.selected.resMags + private.weapons.selected.magMax
+					if private.weapons.selected.resMags > private.weapons.selected.resMagsMax then
+						private.weapons.selected.resMags = private.weapons.selected.resMagsMax
+					end
+				else
+					private.money = private.money + item.getValue()
+				end
 				Level.removeEntity(col.other)
 			end
 		end
@@ -122,13 +104,32 @@ function Player.new(name, x,y,w,h)
 		end
 	end
 	
-	function public.draw()
-		love.graphics.rectangle("line", private.x+camera.x, private.y+camera.y,private.w, private.h)
-		
-		love.graphics.print(private.weapons.selected.mag .. "\t/" .. private.weapons.selected.resMags,0,0)
-		for b,bullet in pairs(private.bullets) do
-			bullet.draw()
+	function removeBullet(name)
+		world:remove(name)
+		private.bullets[name] = nil
+	end
+	
+	function private.playerfilter(item, other)
+		local name = split(other)
+		if name[1] == "bullet" then return false
+		elseif name[1] == "item" or name[1] == "enemy" then return "cross"
+		else return "slide"
 		end
+	end
+	
+	function public.getX()
+		return private.x
+	end
+	
+	function public.getY()
+		return private.y
+	end
+	
+	function public.getW()
+		return private.w
+	end
+	function public.getH()
+		return private.h
 	end
 	
 	function private.shoot(ang)
@@ -143,7 +144,16 @@ function Player.new(name, x,y,w,h)
 			private.weapons.selected.mag = private.weapons.selected.mag -1
 		end
 	end
-	
+
+	function public.draw()
+		love.graphics.rectangle("line", math.floor(private.x+camera.x), math.floor(private.y+camera.y),private.w, private.h)
+		love.graphics.printf("$ " .. private.money, 0, 0, love.graphics.getWidth(), "right" )
+		
+		love.graphics.print(private.weapons.selected.mag .. "\t/" .. private.weapons.selected.resMags,0,0)
+		for b,bullet in pairs(private.bullets) do
+			bullet.draw()
+		end
+	end
 	
 	return public
 end

@@ -6,7 +6,8 @@ function Weapon.new()
 	public.magMax = 0
 	public.shootTimer = 999
 	public.mag = public.magMax
-	public.resMags =0
+	public.resMagsMax = 0
+	public.resMags = public.resMagsMax
 	public.reloadTmr = 0
 	public.reloadTmrmax = 1
 	public.reloading = 0

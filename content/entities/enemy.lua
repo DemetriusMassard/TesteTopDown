@@ -23,7 +23,7 @@ function Enemy.new(name,x,y)
 	
 	function private.enemyfilter(item, other)
 		local name = split(other)
-		if name[1] == "bullet" or name[1] == "item" then return false
+		if name[1] == "bullet" or name[1] == "item" or name[3] == "inv" then return false
 		elseif name[1] == "Player" then return "cross"
 		else return "slide"
 		end
@@ -37,7 +37,7 @@ function Enemy.new(name,x,y)
 		if private.life < 0 then
 			Level.removeEntity(private.name)
 			local chanceItem = love.math.random(0,100)
-			if chanceItem > 66 then
+			if chanceItem > 50 then
 				local name = "item " .. Level.getItemCount()
 				
 				local entities = Level.getEntities()

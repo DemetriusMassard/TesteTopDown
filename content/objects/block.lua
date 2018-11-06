@@ -1,6 +1,6 @@
 Block = {}
 
-function Block.new(name, x,y,w,h)
+function Block.new(name, x,y,w,h, visible)
 	local private = {}
 	local public = {}
 	
@@ -9,6 +9,10 @@ function Block.new(name, x,y,w,h)
 	private.w = w
 	private.h = h
 	private.name = name
+	private.visible = visible
+	if not private.visible then
+		private.name = private.name .. " inv"
+	end
 	
 	world:add(private.name, private.x, private.y, private.w, private.h)
 	
@@ -17,7 +21,9 @@ function Block.new(name, x,y,w,h)
 	end
 	
 	function public.draw()
-		love.graphics.rectangle("fill", private.x+camera.x, private.y+camera.y, private.w, private.h)
+		if private.visible then
+			love.graphics.rectangle("fill", private.x+camera.x, private.y+camera.y, private.w, private.h)
+		end
 	end
 	
 	return public
