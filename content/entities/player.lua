@@ -9,6 +9,10 @@ function Player.new(name, x,y,w,h)
 	private.w = w
 	private.name = name
 	private.money = 0
+	private.crosshair = images['crosshair.png']
+	private.dir = {}
+	private.dir.x = private.x
+	private.dir.y = private.y
 	
 	private.weapons = {}
 	
@@ -34,33 +38,62 @@ function Player.new(name, x,y,w,h)
 		private.shootTimer = private.shootTimer + dt
 		private.xvel = 0
 		private.yvel = 0
-		if love.keyboard.isDown(settings.keyboard.up) then
-			private.yvel = 150
+		if settings.inputtype == "keyboard" or settings.inputtype == "keyboardmouse" then
+			if love.keyboard.isDown(mapping.up) then
+				private.yvel = 150
+			end
+			if love.keyboard.isDown(mapping.down) then
+				private.yvel = -150
+			end
+			if love.keyboard.isDown(mapping.left) then
+				private.xvel = 150
+			end
+			if love.keyboard.isDown(mapping.right)then
+				private.xvel = -150
+			end
+			if love.keyboard.isDown(mapping.primary) then
+				private.weapons.selected.reloading = 0
+				private.weapons.selected.reloadTmr = 0
+				private.shootTimer = 0
+				private.weapons.selected = private.weapons.primary
+			end
+			if love.keyboard.isDown(mapping.secondary) then
+				private.weapons.selected.reloading = 0
+				private.weapons.selected.reloadTmr = 0
+				private.shootTimer = 0
+				private.weapons.selected = private.weapons.secondary
+			end
+			if love.keyboard.isDown(mapping.reload) then
+				private.weapons.selected.reloading = 1
+			end
+			if love.mouse.isDown(1) and private.shootTimer > private.weapons.selected.shootTimer and private.weapons.selected.reloading == 0 then
+				private.dir.x = love.mouse.getX()-love.graphics.getWidth()/2
+				private.dir.y = love.mouse.getY()-love.graphics.getHeight()/2
+				local ang = math.atan2(private.dir.y, private.dir.x)
+				private.shoot(ang)
+			end
+		else
+			private.dir.x = joystick:getGamepadAxis("rightx")
+			private.dir.y = joystick:getGamepadAxis("righty")
+			if joystick:getGamepadAxis("leftx")> 0.3 or joystick:getGamepadAxis("leftx") <-0.3 then
+				private.xvel = -joystick:getGamepadAxis("leftx")*150
+			else
+				private.xvel = 0
+			end
+			if joystick:getGamepadAxis("lefty") > 0.3 or joystick:getGamepadAxis("lefty") <-0.3 then
+				private.yvel = -joystick:getGamepadAxis("lefty")*150
+			else
+				private.yvel = 0
+			end
+			if joystick:isGamepadDown(mapping.reload) then
+				private.weapons.selected.reloading = 1
+			end
+			if joystick:isGamepadDown(mapping.accept) and private.shootTimer > private.weapons.selected.shootTimer and private.weapons.selected.reloading == 0 then
+				local ang = math.atan2(private.dir.y,private.dir.x)
+				private.shoot(ang)
+			end
 		end
-		if love.keyboard.isDown(settings.keyboard.down) then
-			private.yvel = -150
-		end
-		if love.keyboard.isDown(settings.keyboard.left) then
-			private.xvel = 150
-		end
-		if love.keyboard.isDown(settings.keyboard.right) then
-			private.xvel = -150
-		end
-		if love.keyboard.isDown(settings.keyboard.primary) then
-			private.weapons.selected.reloading = 0
-			private.weapons.selected.reloadTmr = 0
-			private.shootTimer = 0
-			private.weapons.selected = private.weapons.primary
-		end
-		if love.keyboard.isDown(settings.keyboard.secondary) then
-			private.weapons.selected.reloading = 0
-			private.weapons.selected.reloadTmr = 0
-			private.shootTimer = 0
-			private.weapons.selected = private.weapons.secondary
-		end
-		if love.keyboard.isDown(settings.keyboard.reload) then
-			private.weapons.selected.reloading = 1
-		end
+
 		
 		if private.weapons.selected.reloading == 1 then
 			private.weapons.selected.reload(dt)
@@ -94,14 +127,6 @@ function Player.new(name, x,y,w,h)
 			bullet.update(dt)
 		end
 		
-		if love.mouse.isDown(1) and private.shootTimer > private.weapons.selected.shootTimer and private.weapons.selected.reloading == 0 then
-		
-			local dir = {}
-			dir.x = love.mouse.getX()-love.graphics.getWidth()/2
-			dir.y = love.mouse.getY()-love.graphics.getHeight()/2
-			local ang = math.atan2(dir.y, dir.x)
-			private.shoot(ang)
-		end
 	end
 	
 	function removeBullet(name)
@@ -152,6 +177,13 @@ function Player.new(name, x,y,w,h)
 		love.graphics.print(private.weapons.selected.mag .. "\t/" .. private.weapons.selected.resMags,0,0)
 		for b,bullet in pairs(private.bullets) do
 			bullet.draw()
+		end
+		if settings.inputtype == "keyboard" or settings.inputtype == "joystick" then
+			if private.dir.x <0.3 or private.dir.x >0.3 then
+				if private.dir.y <0.3 or private.dir.y > 0.3 then
+					love.graphics.draw(private.crosshair, private.x+camera.x+private.dir.x*50, private.y+camera.y+private.dir.y*50)
+				end
+			end
 		end
 	end
 	

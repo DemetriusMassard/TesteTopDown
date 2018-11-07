@@ -4,6 +4,8 @@ function Menu.new()
 	local private = {}
 	local public = {}
 	
+	
+	print(mapping.down .. "\n" .. mapping.up)
 	mouse = {}
 	mouse.x = love.mouse.getX()
 	mouse.y = love.mouse.getY()
@@ -30,58 +32,70 @@ function Menu.new()
 	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,50,190,50,"vsync", {"Enabled", "Disabled"}, "vsync"))
 	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,105,190,50,"fullscreen", {"Fullscreen", "Windowed"}, "fullscreen"))
 	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,160,190,50,"resolution", modes.txt, "resolution"))
-	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,215,190,50,"resolution", {"save"}))
-	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,270,190,50,"resolution", {"back"}))
-	
+	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,215,190,50,"inputtype", {"Keyboard Mouse", "Keyboard", "Joystick"}, "Controller Type"))
+	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,270,190,50,"save", {"save"}))
+	table.insert(private.options, Button.new(love.graphics.getWidth()/2-95,325,190,50,"back", {"back"}))
 	
 	private.visible = private.main
+	private.visible[private.selected].focus()
 	
 	function public.update(dt)
-		mouse.x, mouse.y = love.mouse.getPosition()
-		mouse.timer = mouse.timer + dt
-		
-		for b,button in pairs(private.visible) do
-			button.unfocus()
-			if coll(button.x,button.y,button.w,button.h, mouse.x, mouse.y, 1,1) then
-				private.selected = b
+		print(joystick:getGamepadAxis("leftx"))
+		print(joystick:getGamepadAxis("lefty"))
+		os.execute("cls")
+		if settings.inputtype == "keyboardmouse" then
+			mouse.x, mouse.y = love.mouse.getPosition()
+			mouse.timer = mouse.timer + dt
+			
+			for b,button in pairs(private.visible) do
+				button.unfocus()
+				if coll(button.x,button.y,button.w,button.h, mouse.x, mouse.y, 1,1) then
+					private.selected = b
+				end
 			end
-		end
-		private.visible[private.selected].focus()
-		accept = split(settings.keyboard.accept)
-		if mouse.timer >0.4 then
-			if accept[1] == 'mouse' then
-				if love.mouse.isDown(accept[2]) then
-					private.accept()
-					mouse.timer = 0
+			private.visible[private.selected].focus()
+			accept = split(mapping.accept)
+			if mouse.timer >0.4 then
+				if accept[1] == 'mouse' then
+					if love.mouse.isDown(accept[2]) then
+						private.accept()
+						mouse.timer = 0
+					end
 				end
 			end
 		end
 	end
 	
 	function public.keypressed(key,unicode)
-		if key == settings.keyboard.down then
+		if key == mapping.down then
 			private.selected = private.selected+1
 			if private.selected == table.getn(private.visible)+1 then
 				private.selected = 1
 			end
 		end
-		if key == settings.keyboard.up then
+		if key == mapping.up then
 			private.selected = private.selected-1
 			if private.selected ==0 then
 				private.selected = table.getn(private.visible)
 			end
 		end
 		
-		if key == settings.keyboard.left then
+		if key == mapping.left then
 			private.visible[private.selected].changeOption(1)
 		end
-		if key == settings.keyboard.right then
+		if key == mapping.right then
 			private.visible[private.selected].changeOption(-1)
 		end
 		
-		if key == settings.keyboard.accept then
+		if key == mapping.accept then
 			private.accept()
 		end
+		
+		for b,button in pairs(private.visible) do
+			button.unfocus()
+			
+		end
+		private.visible[private.selected].focus()
 	end
 	
 	function private.accept()
@@ -96,7 +110,7 @@ function Menu.new()
 			end
 		end
 		if private.visible == private.options then
-			if private.selected == 4 then
+			if private.selected == 5 then
 				selectedmode = modes.modes[private.visible[3].getOption()]
 				if private.visible[1].getOption() == 1 then
 					settings.vsync = true
@@ -110,9 +124,19 @@ function Menu.new()
 				end
 				settings.resolution.w = selectedmode.width
 				settings.resolution.h = selectedmode.height
+				if private.visible[4].getOption() == 1 then
+					settings.inputtype = "keyboardmouse"
+				elseif private.visible[4].getOption() == 2 then
+					settings.inputtype = "keyboard"
+				else
+					settings.inputtype = "joystick"
+				end
+				
 				applySettings()
+				Level = Menu.new()
+				mapping = settings[settings.inputtype]
 				print(selectedmode.width .. 'x' .. selectedmode.height)
-			elseif private.selected == 5 then
+			elseif private.selected == 6 then
 				private.selected = 1
 				private.visible = private.main
 			end

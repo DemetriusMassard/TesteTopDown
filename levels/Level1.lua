@@ -14,6 +14,10 @@ function Level1.new()
 	private.waves[3] = 55
 	private.waves[4] = 90
 	private.waves[5] = 130
+	private.waves[6] = 180
+	private.waves[7] = 240
+	private.waves[8] = 300
+	private.waves[9] = 0
 	
 	
 	private.entities = {}
@@ -37,7 +41,7 @@ function Level1.new()
 	
 	function public.update(dt)
 		private.waves.timer = private.waves.timer + dt
-		if private.waves.timer > 30 then
+		if private.waves.timer > 60 then
 			public.nextWave()
 		end
 		

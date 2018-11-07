@@ -9,25 +9,25 @@ function love.load()
 	json = require('json')
 	
 	cursor = love.mouse.newCursor( 'assets/crosshair.png', 8, 8 )
-	love.mouse.setCursor(cursor)
 	
 	images = {}
 	loadImages('assets')
 	
 	loadSettings()
+	mapping = settings[settings.inputtype]
+	
 	Level = Menu.new()
+	love.joystick.loadGamepadMappings('mappings')
     joystick_list = love.joystick.getJoysticks()
 	for j, joy in pairs(joystick_list) do
 		print(joy)
-	end
-	love.joystick.loadGamepadMappings('mappings')
-    for j,joystick in pairs(joystick_list) do
-		if joystick:isGamepad() then
-			print("new gamepad '"..joystick:getName().."' with GUID "..joystick:getGUID())
+		if joy:isGamepad() then
+			print("new gamepad '"..joy:getName().."' with GUID "..joy:getGUID())
 		else
-			print("new joystick '"..joystick:getName().."' with GUID "..joystick:getGUID())
+			print("new joystick '"..joy:getName().."' with GUID "..joy:getGUID())
 		end
 	end
+	joystick = joystick_list[1]
 end
 
 function love.update(dt)
@@ -39,13 +39,13 @@ function love.draw()
 end
 
 function love.keypressed(key, unicode)
-	if settings.inputtype == "keyboard" then
-		Level.keypressed(key, unicode, nil, nil)
+	if settings.inputtype == "keyboard" or settings.inputtype == "keyboardmouse" then
+		Level.keypressed(key, unicode)
 	end
 end
 
 function love.gamepadpressed(joystick, button)
-	Level.keypressed(nil, nil, joystick, button)
+	Level.keypressed(button,joystick)
 	print(button)
 end
 
@@ -81,10 +81,13 @@ function loadSettings()
 			fullscreentype = "exclusive",
 			msaa = 0,
 			vsync = false,
-			inputtype = "keyboard",
-			keyboard = {
+			inputtype = "keyboardmouse",
+			keyboardmouse = {
 				primary = "1",
 				secondary = "2",
+				tertiary = "3",
+				weaponup = "",
+				weapondown = "",
 				reload = "r",
 				accept = "mouse 1",
 				decline = "esc",
@@ -93,7 +96,37 @@ function loadSettings()
 				down = "s",
 				left = "a",
 				right = "d"
-			}
+			},
+			keyboard = {
+				primary = "a",
+				secondary = "s",
+				tertiary = "d",
+				weaponup = "",
+				weapondown = "",
+				reload = "x",
+				accept = "z",
+				decline = "esc",
+				interact = "c",
+				up = "up",
+				down = "down",
+				left = "left",
+				right = "right"
+			},
+			joystick = {
+				primary = "",
+				secondary = "",
+				tertiary = "",
+				weaponup = "leftshoulder",
+				weapondown = "",
+				reload = "y",
+				accept = "rightshoulder",
+				decline = "b",
+				interact = "a",
+				up = "dpup",
+				down = "dpdown",
+				left = "dpleft",
+				right = "dpright"
+			}	
 		}
 		saveSettings()
 	else
@@ -112,6 +145,11 @@ end
 
 function applySettings()
 	love.window.setMode(settings.resolution.w,settings.resolution.h, {fullscreen = settings.fullscreen,fullscreentype= settings.fullscreentype, vsync = settings.vsync,msaa = settings.msaa })
+	if settings.inputtype == "keyboardmouse" then
+		love.mouse.setCursor(cursor)
+	else
+		love.mouse.setVisible(false)
+	end
 	saveSettings()
 end
 
